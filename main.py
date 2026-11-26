@@ -10,8 +10,9 @@ HTML_APP = """
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Fechamento TD">
-  <title>Fechamento Terno de Dezena</title>
+  <meta name="apple-mobile-web-app-title" content="Fechamento JB">
+  <title>Fechamento Terno e Duque</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://w3.org viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍀</text></svg>">
   <style>
     :root {
       --bg: #0f172a;
@@ -41,8 +42,8 @@ HTML_APP = """
 
     header {
       text-align: center;
-      margin-bottom: 24px;
-      padding-top: 10px;
+      margin-bottom: 18px;
+      padding-top: 8px;
     }
 
     header h1 {
@@ -56,6 +57,33 @@ HTML_APP = """
       color: var(--muted);
     }
 
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--card);
+      padding: 6px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .tab-btn {
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: #064e3b;
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -66,6 +94,12 @@ HTML_APP = """
 
     .form-group {
       margin-bottom: 14px;
+    }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     label {
@@ -99,8 +133,7 @@ HTML_APP = """
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .btn-primary {
@@ -169,44 +202,96 @@ HTML_APP = """
 <body>
 
   <header>
-    <h1>Fechamento Terno de Dezena</h1>
-    <p>3 Grupos • 64 Combinações (100% Fechado)</p>
+    <h1>Fechamento de Dezenas</h1>
+    <p id="subtituloHeader">Terno: 3 Grupos • 64 Combinações</p>
   </header>
 
-  <div class="card">
-    <div class="form-group">
-      <label for="grupo1">1º Grupo (Bicho)</label>
-      <select id="grupo1"></select>
-    </div>
-
-    <div class="form-group">
-      <label for="grupo2">2º Grupo (Bicho)</label>
-      <select id="grupo2"></select>
-    </div>
-
-    <div class="form-group">
-      <label for="grupo3">3º Grupo (Bicho)</label>
-      <select id="grupo3"></select>
-    </div>
-
-    <div class="form-group">
-      <label for="valorTotal">Valor Total da Aposta (R$) - Opcional</label>
-      <input type="number" id="valorTotal" value="10" step="0.50" min="1">
-    </div>
-
-    <button class="btn btn-primary" onclick="gerarCombinacoes()">Gerar 64 Combinações</button>
-    <p id="erroMsg" class="error">Por favor, escolha 3 grupos diferentes.</p>
+  <div class="tabs">
+    <button type="button" class="tab-btn active" id="tabBtnTerno" onclick="mudarAba('terno')">Terno (3 Grupos)</button>
+    <button type="button" class="tab-btn" id="tabBtnDuque" onclick="mudarAba('duque')">Duque (2 Grupos)</button>
   </div>
 
-  <div id="resultadoCard" class="card hidden">
-    <div class="summary">
-      <span>Por jogo: <strong id="valorPorJogo">R$ 0,15</strong></span>
-      <span>Retorno (15.000x): <strong id="retornoEstimado">R$ 2.343,75</strong></span>
+  <div id="abaTerno">
+    <div class="card">
+      <div class="form-group">
+        <label for="t_grupo1">1º Grupo (Bicho)</label>
+        <select id="t_grupo1"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="t_grupo2">2º Grupo (Bicho)</label>
+        <select id="t_grupo2"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="t_grupo3">3º Grupo (Bicho)</label>
+        <select id="t_grupo3"></select>
+      </div>
+
+      <div class="row-2">
+        <div class="form-group">
+          <label for="t_valorTotal">Aposta Total (R$)</label>
+          <input type="number" id="t_valorTotal" value="10" step="0.50" min="1">
+        </div>
+        <div class="form-group">
+          <label for="t_cotacao">Cotação (x)</label>
+          <input type="number" id="t_cotacao" value="15000" step="100" min="1">
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="gerarTerno()">Gerar 64 Combinações</button>
+      <p id="t_erroMsg" class="error">Por favor, escolha 3 grupos diferentes.</p>
     </div>
 
-    <button class="btn btn-copy" id="btnCopiar" onclick="copiarJogos()">Copiar Todas as 64 Combinações</button>
+    <div id="t_resultadoCard" class="card hidden">
+      <div class="summary">
+        <span>Por jogo: <strong id="t_valorPorJogo">R$ 0,15</strong></span>
+        <span>Retorno: <strong id="t_retornoEstimado">R$ 2.343,75</strong></span>
+      </div>
 
-    <div id="listaCombinacoes" class="grid"></div>
+      <button type="button" class="btn btn-copy" id="t_btnCopiar" onclick="copiarJogos('terno')">Copiar Todas as 64 Combinações</button>
+
+      <div id="t_listaCombinacoes" class="grid"></div>
+    </div>
+  </div>
+
+  <div id="abaDuque" class="hidden">
+    <div class="card">
+      <div class="form-group">
+        <label for="d_grupo1">1º Grupo (Bicho)</label>
+        <select id="d_grupo1"></select>
+      </div>
+
+      <div class="form-group">
+        <label for="d_grupo2">2º Grupo (Bicho)</label>
+        <select id="d_grupo2"></select>
+      </div>
+
+      <div class="row-2">
+        <div class="form-group">
+          <label for="d_valorTotal">Aposta Total (R$)</label>
+          <input type="number" id="d_valorTotal" value="10" step="0.50" min="1">
+        </div>
+        <div class="form-group">
+          <label for="d_cotacao">Cotação (x)</label>
+          <input type="number" id="d_cotacao" value="300" step="10" min="1">
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-primary" onclick="gerarDuque()">Gerar 16 Combinações</button>
+      <p id="d_erroMsg" class="error">Por favor, escolha 2 grupos diferentes.</p>
+    </div>
+
+    <div id="d_resultadoCard" class="card hidden">
+      <div class="summary">
+        <span>Por jogo: <strong id="d_valorPorJogo">R$ 0,35</strong></span>
+        <span>Retorno: <strong id="d_retornoEstimado">R$ 107,14</strong></span>
+      </div>
+
+      <button type="button" class="btn btn-copy" id="d_btnCopiar" onclick="copiarJogos('duque')">Copiar Todas as 16 Combinações</button>
+
+      <div id="d_listaCombinacoes" class="grid"></div>
+    </div>
   </div>
 
   <script>
@@ -238,76 +323,144 @@ HTML_APP = """
       { id: 25, nome: "25 - Vaca", dezenas: ["97", "98", "99", "00"] }
     ];
 
-    let combinacoesAtuais = [];
+    let combosTerno = [];
+    let combosDuque = [];
 
     function popularSelects() {
-      const selects = ["grupo1", "grupo2", "grupo3"];
-      selects.forEach((selId, index) => {
+      const selectsTerno = ["t_grupo1", "t_grupo2", "t_grupo3"];
+      selectsTerno.forEach(function(selId, index) {
         const select = document.getElementById(selId);
-        grupos.forEach(g => {
+        grupos.forEach(function(g) {
           const option = document.createElement("option");
           option.value = g.id;
-          option.textContent = `${g.nome} (${g.dezenas.join(", ")})`;
+          option.textContent = g.nome + " (" + g.dezenas.join(", ") + ")";
+          select.appendChild(option);
+        });
+        select.value = index + 1;
+      });
+
+      const selectsDuque = ["d_grupo1", "d_grupo2"];
+      selectsDuque.forEach(function(selId, index) {
+        const select = document.getElementById(selId);
+        grupos.forEach(function(g) {
+          const option = document.createElement("option");
+          option.value = g.id;
+          option.textContent = g.nome + " (" + g.dezenas.join(", ") + ")";
           select.appendChild(option);
         });
         select.value = index + 1;
       });
     }
 
-    function gerarCombinacoes() {
-      const id1 = parseInt(document.getElementById("grupo1").value);
-      const id2 = parseInt(document.getElementById("grupo2").value);
-      const id3 = parseInt(document.getElementById("grupo3").value);
-      const erroMsg = document.getElementById("erroMsg");
+    function mudarAba(aba) {
+      const abaTerno = document.getElementById("abaTerno");
+      const abaDuque = document.getElementById("abaDuque");
+      const btnTerno = document.getElementById("tabBtnTerno");
+      const btnDuque = document.getElementById("tabBtnDuque");
+      const subtitulo = document.getElementById("subtituloHeader");
+
+      if (aba === "terno") {
+        abaTerno.classList.remove("hidden");
+        abaDuque.classList.add("hidden");
+        btnTerno.classList.add("active");
+        btnDuque.classList.remove("active");
+        subtitulo.textContent = "Terno: 3 Grupos • 64 Combinações";
+      } else {
+        abaTerno.classList.add("hidden");
+        abaDuque.classList.remove("hidden");
+        btnTerno.classList.remove("active");
+        btnDuque.classList.add("active");
+        subtitulo.textContent = "Duque: 2 Grupos • 16 Combinações (100%)";
+      }
+    }
+
+    function gerarTerno() {
+      const id1 = parseInt(document.getElementById("t_grupo1").value);
+      const id2 = parseInt(document.getElementById("t_grupo2").value);
+      const id3 = parseInt(document.getElementById("t_grupo3").value);
+      const erroMsg = document.getElementById("t_erroMsg");
 
       if (id1 === id2 || id1 === id3 || id2 === id3) {
         erroMsg.style.display = "block";
-        document.getElementById("resultadoCard").classList.add("hidden");
+        document.getElementById("t_resultadoCard").classList.add("hidden");
         return;
       }
 
       erroMsg.style.display = "none";
 
-      const g1 = grupos.find(g => g.id === id1).dezenas;
-      const g2 = grupos.find(g => g.id === id2).dezenas;
-      const g3 = grupos.find(g => g.id === id3).dezenas;
+      const g1 = grupos.find(function(g) { return g.id === id1; }).dezenas;
+      const g2 = grupos.find(function(g) { return g.id === id2; }).dezenas;
+      const g3 = grupos.find(function(g) { return g.id === id3; }).dezenas;
 
-      combinacoesAtuais = [];
+      combosTerno = [];
 
       for (let d1 of g1) {
         for (let d2 of g2) {
           for (let d3 of g3) {
-            combinacoesAtuais.push(`${d1}-${d2}-${d3}`);
+            combosTerno.push(d1 + "-" + d2 + "-" + d3);
           }
         }
       }
 
-      atualizarFinanceiro();
-      renderizarLista();
-      document.getElementById("resultadoCard").classList.remove("hidden");
+      atualizarFinanceiro("terno", 64);
+      renderizarLista("t_listaCombinacoes", combosTerno);
+      document.getElementById("t_resultadoCard").classList.remove("hidden");
     }
 
-    function atualizarFinanceiro() {
-      const total = parseFloat(document.getElementById("valorTotal").value) || 0;
-      const porJogo = total / 64;
-      const retorno = porJogo * 15000;
+    function gerarDuque() {
+      const id1 = parseInt(document.getElementById("d_grupo1").value);
+      const id2 = parseInt(document.getElementById("d_grupo2").value);
+      const erroMsg = document.getElementById("d_erroMsg");
 
-      document.getElementById("valorPorJogo").textContent = porJogo.toLocaleString("pt-BR", {
+      if (id1 === id2) {
+        erroMsg.style.display = "block";
+        document.getElementById("d_resultadoCard").classList.add("hidden");
+        return;
+      }
+
+      erroMsg.style.display = "none";
+
+      const g1 = grupos.find(function(g) { return g.id === id1; }).dezenas;
+      const g2 = grupos.find(function(g) { return g.id === id2; }).dezenas;
+
+      combosDuque = [];
+
+      for (let d1 of g1) {
+        for (let d2 of g2) {
+          combosDuque.push(d1 + "-" + d2);
+        }
+      }
+
+      atualizarFinanceiro("duque", 16);
+      renderizarLista("d_listaCombinacoes", combosDuque);
+      document.getElementById("d_resultadoCard").classList.remove("hidden");
+    }
+
+
+    function atualizarFinanceiro(tipo, qtdJogos) {
+      const prefixo = tipo === "terno" ? "t_" : "d_";
+      const total = parseFloat(document.getElementById(prefixo + "valorTotal").value) || 0;
+      const cotacao = parseFloat(document.getElementById(prefixo + "cotacao").value) || 0;
+
+      const porJogo = total / qtdJogos;
+      const retorno = porJogo * cotacao;
+
+      document.getElementById(prefixo + "valorPorJogo").textContent = porJogo.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
       });
 
-      document.getElementById("retornoEstimado").textContent = retorno.toLocaleString("pt-BR", {
+      document.getElementById(prefixo + "retornoEstimado").textContent = retorno.toLocaleString("pt-BR", {
         style: "currency",
         currency: "BRL"
       });
     }
 
-    function renderizarLista() {
-      const container = document.getElementById("listaCombinacoes");
+    function renderizarLista(containerId, lista) {
+      const container = document.getElementById(containerId);
       container.innerHTML = "";
 
-      combinacoesAtuais.forEach(combo => {
+      lista.forEach(function(combo) {
         const div = document.createElement("div");
         div.className = "combo-item";
         div.textContent = combo;
@@ -315,21 +468,51 @@ HTML_APP = """
       });
     }
 
-    function copiarJogos() {
-      const texto = combinacoesAtuais.join("\\n");
-      navigator.clipboard.writeText(texto).then(() => {
-        const btn = document.getElementById("btnCopiar");
-        const textoOriginal = btn.textContent;
+      function copiarJogos(tipo) {
+      const lista = tipo === "terno" ? combosTerno : combosDuque;
+      const btnId = tipo === "terno" ? "t_btnCopiar" : "d_btnCopiar";
+      const texto = lista.join(String.fromCharCode(10));
+      const btn = document.getElementById(btnId);
+      const textoOriginal = btn.textContent;
+
+      function mostrarSucesso() {
         btn.textContent = "Copiado com sucesso!";
         btn.style.background = "#10b981";
-        setTimeout(() => {
+        setTimeout(function() {
           btn.textContent = textoOriginal;
           btn.style.background = "#3b82f6";
         }, 2000);
-      });
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(mostrarSucesso).catch(function() {
+          copiarFallback(texto, mostrarSucesso);
+        });
+      } else {
+        copiarFallback(texto, mostrarSucesso);
+      }
     }
 
-    popularSelects();
+    function copiarFallback(texto, callback) {
+      const area = document.createElement("textarea");
+      area.value = texto;
+      area.style.position = "fixed";
+      area.style.left = "-9999px";
+      document.body.appendChild(area);
+      area.focus();
+      area.select();
+      try {
+        document.execCommand("copy");
+        callback();
+      } catch (err) {
+        alert("Não foi possível copiar automaticamente. Selecione os números na tela.");
+      }
+      document.body.removeChild(area);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      popularSelects();
+    });
   </script>
 </body>
 </html>
